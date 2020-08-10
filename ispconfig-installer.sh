@@ -137,16 +137,12 @@ freshclam||echo ^The error can be ignored on the first run of freshclam.
 # ERROR: Problem with internal logger (UpdateLogFile = /var/log/clamav/freshclam.log).
 service clamav-daemon start
 
-cd /tmp
 ISPSTAB=$(curl -skL https://git.ispconfig.org/ispconfig/ispconfig3/-/branches|grep branch-item.*stable|head -n1|cut -d\" -f4)
-curl -skLo helper_scripts.zip "https://git.ispconfig.org/ispconfig/ispconfig3/-/archive/${ISPSTAB}/ispconfig3-${ISPSTAB}.zip?path=helper_scripts"
-AMAVISDPATCH=$( unzip -Z1 helper_scripts.zip | grep amavisd )
-unzip -o helper_scripts.zip "$AMAVISDPATCH" -d /tmp
-cd /usr/sbin
-cp -pf amavisd-new amavisd-new_bak
-patch < /tmp/${AMAVISDPATCH}
-rm -f /tmp/${AMAVISDPATCH}
-cd $WRKDIR
+curl -skLo /tmp/helper_scripts.zip "https://git.ispconfig.org/ispconfig/ispconfig3/-/archive/${ISPSTAB}/ispconfig3-${ISPSTAB}.zip?path=helper_scripts"
+AMAVISDPATCH=$( unzip -Z1 /tmp/helper_scripts.zip | grep amavisd )
+unzip -o /tmp/helper_scripts.zip "$AMAVISDPATCH" -d /tmp
+patch -d /usr/sbin -b -N < /tmp/${AMAVISDPATCH} || true
+rm -rf /tmp/${AMAVISDPATCH}
 
 printmes '7.1 Install Metronome XMPP Server (optional)
 https://www.howtoforge.com/tutorial/perfect-server-ubuntu-18.04-with-apache-php-myqsl-pureftpd-bind-postfix-doveot-and-ispconfig/#-install-metronome-xmpp-server-optional'
