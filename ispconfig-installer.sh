@@ -139,8 +139,9 @@ service clamav-daemon start
 
 cd /tmp
 ISPSTAB=$(curl -skL https://git.ispconfig.org/ispconfig/ispconfig3/-/branches|grep branch-item.*stable|head -n1|cut -d\" -f4)
-AMAVISDPATCH=$(curl -skL https://git.ispconfig.org/ispconfig/ispconfig3/tree/${ISPSTAB}/helper_scripts|grep href.*amavisd|cut -d\" -f4|rev|cut -d\/ -f1|rev)
-curl -skLo ${AMAVISDPATCH} https://git.ispconfig.org/ispconfig/ispconfig3/raw/${ISPSTAB}/helper_scripts/${AMAVISDPATCH}
+curl -skLo helper_scripts.zip "https://git.ispconfig.org/ispconfig/ispconfig3/-/archive/${ISPSTAB}/ispconfig3-${ISPSTAB}.zip?path=helper_scripts"
+AMAVISDPATCH=$( unzip -Z1 helper_scripts.zip | grep amavisd )
+unzip -o helper_scripts.zip "$AMAVISDPATCH" -d /tmp
 cd /usr/sbin
 cp -pf amavisd-new amavisd-new_bak
 patch < /tmp/${AMAVISDPATCH}
